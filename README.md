@@ -196,7 +196,6 @@ make down
 
 ---
 
----
 
 ### Option 3: Docker without Make
 
@@ -253,6 +252,7 @@ docker compose down
 👉 After step 1–4, your API will be running at:
 **[http://localhost:8000/api](http://localhost:8000/api)**---
 
+---
 
 ## Approach
 
