@@ -18,7 +18,7 @@ class TaskPolicy
             return true;
         }
 
-        return $task->assigned_user_id === $user->id;
+        return $task->assignee_id === $user->id;
     }
 
     /**
@@ -51,12 +51,13 @@ class TaskPolicy
             return true;
         }
 
-        if ($user->role === 'user' && $task->assigned_user_id === $user->id) {
-            return true; // but you’ll restrict which fields in controller/request
+        if ($user->role === 'user' && $task->assignee_id === $user->id) {
+            return true;
         }
 
         return false;
     }
+
 
     /**
      * Determine whether the user can delete a task.

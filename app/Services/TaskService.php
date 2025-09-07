@@ -5,12 +5,16 @@ namespace App\Services;
 use App\Models\Task;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 class TaskService
 {
     public function create(array $data): Task
     {
 
+        $data['creator_id'] = auth()->guard('sanctum')->user()->id;
         $task = Task::create(Arr::except($data, ['dependencies']));
+
         if(isset($data['dependencies'])) {
             $task->dependencies()->attach($data['dependencies']);
         }
@@ -22,7 +26,7 @@ class TaskService
         if (isset($data['status']) && $data['status'] === 'completed') {
             $incompleteDeps = $task->dependencies()->where('status', '!=', 'completed')->exists();
             if ($incompleteDeps) {
-                throw new \Exception("Task cannot be marked completed until all dependencies are done.");
+                throw new HttpException(422, "Task cannot be marked completed until all dependencies are done.");
             }
         }
 
@@ -58,6 +62,6 @@ class TaskService
             $query->whereBetween('due_date', [$filters['due_from'], $filters['due_to']]);
         }
 
-        return $query->with('dependencies', 'assignedUser')->get();
+        return $query->with('dependencies', 'assignee', 'creator')->get();
     }
 }
