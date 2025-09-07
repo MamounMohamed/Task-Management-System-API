@@ -4,7 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
+use App\Policies\TaskPolicy;
 
+#[UsePolicy(TaskPolicy::class)]
 class Task extends Model
 {
     /** @use HasFactory<\Database\Factories\TaskFactory> */
@@ -33,7 +36,7 @@ class Task extends Model
     {
         return $this->belongsToMany(Task::class, 'task_dependencies', 'task_id', 'dependency_id');
     }
-    
+
     // Tasks that depend on this task
     public function dependents()
     {
