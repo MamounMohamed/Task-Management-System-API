@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\TaskRequests\TaskStoreRequest;
-use App\Http\Requests\TaskRequests\TaskUpdateRequest;
-use App\Http\Requests\TaskRequests\TaskDependencyRequest;
+use App\Http\Requests\Tasks\TaskStoreRequest;
+use App\Http\Requests\Tasks\TaskUpdateRequest;
+use App\Http\Requests\Tasks\TaskDependencyRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
