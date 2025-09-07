@@ -45,8 +45,8 @@ The API uses Laravel Policies for authorization and Sanctum for API token-based 
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/task-management-api.git
-cd task-management-api
+git clone https://github.com/MamounMohamed/Task-Management-System-API.git
+cd Task-Management-System-API
 ```
 
 Install dependencies via Composer:
@@ -77,6 +77,11 @@ DB_PORT=3306
 DB_DATABASE=task_management
 DB_USERNAME=root
 DB_PASSWORD=
+
+Or 
+
+DB_CONNECTION=sqlite
+
 
 SANCTUM_STATEFUL_DOMAINS=localhost:8000
 ```
