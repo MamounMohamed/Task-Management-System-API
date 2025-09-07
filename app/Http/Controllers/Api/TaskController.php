@@ -22,7 +22,7 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['status', 'assignee_id', 'due_date']);
+        $filters = $request->only(['status', 'assignee_id', 'due_from' , 'due_to']);
         $tasks = $this->service->filter($filters);
 
         // users only see their tasks
@@ -30,29 +30,30 @@ class TaskController extends Controller
             $tasks = $tasks->where('assigned_user_id', $request->user()->id);
         }
 
-        return TaskResource::collection($tasks);
+        return
+        $this->successResponse(data: TaskResource::collection($tasks));
     }
 
     public function store(TaskStoreRequest $request)
     {
         $task = $this->service->create($request->validated());
-        return new TaskResource($task);
+        return $this->successResponse(data: TaskResource::make($task));
     }
 
     public function show(Task $task)
     {
-        return new TaskResource($task->load('dependencies', 'assignedUser'));
+        return $this->successResponse(data: TaskResource::make($task->load('dependencies', 'assignee' , 'creator')));
     }
 
     public function update(TaskUpdateRequest $request, Task $task)
     {
         $task = $this->service->update($task, $request->validated());
-        return new TaskResource($task);
+        return $this->successResponse(data: TaskResource::make($task));
     }
 
     public function addDependencies(TaskDependencyRequest $request, Task $task)
     {
         $task = $this->service->addDependencies($task, $request->dependencies);
-        return new TaskResource($task);
+        return $this->successResponse(data: TaskResource::make($task));
     }
 }

@@ -4,12 +4,17 @@ namespace App\Services;
 
 use App\Models\Task;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Arr;
 class TaskService
 {
     public function create(array $data): Task
     {
-        return Task::create($data);
+
+        $task = Task::create(Arr::except($data, ['dependencies']));
+        if(isset($data['dependencies'])) {
+            $task->dependencies()->attach($data['dependencies']);
+        }
+        return $task;
     }
 
     public function update(Task $task, array $data): Task
@@ -21,7 +26,10 @@ class TaskService
             }
         }
 
-        $task->update($data);
+        $task->update(Arr::except($data, ['dependencies']));
+        if(isset($data['dependencies'])) {
+            $task->dependencies()->sync($data['dependencies']);
+        }
         return $task;
     }
 
@@ -42,8 +50,8 @@ class TaskService
             $query->where('status', $filters['status']);
         }
 
-        if (isset($filters['assigned_user_id'])) {
-            $query->where('assigned_user_id', $filters['assigned_user_id']);
+        if (isset($filters['assignee_id'])) {
+            $query->where('assignee_id', $filters['assignee_id']);
         }
 
         if (isset($filters['due_from']) && isset($filters['due_to'])) {

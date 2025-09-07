@@ -45,7 +45,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return response()->json([
+        return $this->successResponse(data: [
             'user' => UserResource::make($user),
             'token' => $token,
         ]);
@@ -58,8 +58,6 @@ class AuthController extends Controller
     {
         auth()->guard('sanctum')->user()->tokens()->delete();
 
-        return response()->json([
-            'message' => 'Logged out successfully',
-        ]);
+        return $this->successResponse(data: [], message: 'Logged out successfully');
     }
 }
