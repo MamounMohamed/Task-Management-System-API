@@ -181,8 +181,6 @@ php artisan test
 * Task filtering
 * Authorization policies
 
-> Tip: Ensure your `.env.testing` database is configured for testing.
-
 ---
 
 ## Error Handling
@@ -193,7 +191,6 @@ All API errors return a consistent JSON structure:
 {
   "success": false,
   "message": "Error message",
-  "errors": { "field": ["Error detail"] }
 }
 ```
 
