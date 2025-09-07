@@ -39,6 +39,25 @@
 				},
 				{
 					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"if (jsonData && jsonData.data && jsonData.data.token) {\r",
+									"    pm.collectionVariables.set(\"token\", jsonData.data.token);\r",
+									"    console.log(\"Token set in collection:\", jsonData.data.token);\r",
+									"} else {\r",
+									"    console.error(\"Token not found in response:\", jsonData);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -49,7 +68,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"manager@example.com\",\n  \"password\": \"password\"\n}"
+							"raw": "{\n  \"email\": \"test_user@example.com\",\n  \"password\": \"password\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/auth/login",
@@ -76,6 +95,11 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -104,6 +128,11 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -126,16 +155,21 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/tasks/10",
+							"raw": "{{base_url}}/tasks/1",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"tasks",
-								"10"
+								"1"
 							]
 						}
 					},
@@ -197,16 +231,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"Updated Task\",\n  \"status\": \"cancelled\",\n  \"assigned_user_id\": 3\n}"
+							"raw": "{\n  \"status\": \"completed\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/tasks/1",
+							"raw": "{{base_url}}/tasks/3",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"tasks",
-								"1"
+								"3"
 							]
 						}
 					},
@@ -224,6 +258,11 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -252,6 +291,11 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -280,6 +324,11 @@
 							{
 								"key": "Authorization",
 								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"url": {
@@ -305,6 +354,38 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [
