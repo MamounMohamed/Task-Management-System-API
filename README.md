@@ -1,61 +1,305 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is the Task Management System API, built with Laravel 12 and Sanctum authentication. This API provides endpoints for user authentication, task management, and task dependencies. The project is designed to be robust, maintainable, and developer-friendly.
 
-## About Laravel
+## Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Project Overview](#project-overview)
+- [Installation](#installation)
+- [Environment Setup](#environment-setup)
+- [Running the Project](#running-the-project)
+- [Approach](#approach)
+- [API Documentation](#api-documentation)
+- [Postman Collection](#postman-collection)
+- [Tests](#tests)
+- [Error Handling](#error-handling)
+- [Reviewer Quick Start Guide](#reviewer-quick-start-guide)
+- [License](#license)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Project Overview
 
-## Learning Laravel
+This API allows users to:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- Register and login with roles (manager, user)
+- Perform CRUD operations on tasks
+- Assign tasks to users
+- Track task dependencies
+- Filter tasks by status or due date range
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+The API uses Laravel Policies for authorization and Sanctum for API token-based authentication. Responses follow a consistent JSON structure:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```json
+{
+  "success": true,
+  "message": "Task created successfully",
+  "data": {...}
+}
+````
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Installation
 
-### Premium Partners
+Clone the repository:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+git clone https://github.com/your-username/task-management-api.git
+cd task-management-api
+```
 
-## Contributing
+Install dependencies via Composer:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Environment Setup
 
-## Security Vulnerabilities
+Copy `.env.example` to `.env`:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cp .env.example .env
+```
 
-## License
+Set your environment variables:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+APP_NAME=TaskManagementAPI
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=task_management
+DB_USERNAME=root
+DB_PASSWORD=
+
+SANCTUM_STATEFUL_DOMAINS=localhost:8000
+```
+
+Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+Run database migrations and seeders:
+
+```bash
+php artisan migrate --seed
+```
+
+---
+
+## Running the Project
+
+Start the Laravel development server:
+
+```bash
+php artisan serve
+```
+
+Your API will be available at `http://localhost:8000/api`.
+
+---
+
+## Approach
+
+* **Clean Architecture**: Controllers handle requests, Services handle business logic, and Resources handle API responses.
+* **Policies**: Laravel policies protect endpoints based on user roles.
+* **Validation**: Requests are validated using custom FormRequest classes.
+* **Consistent Responses**: All API responses are standardized with `success`, `message`, and `data`.
+* **Exception Handling**: Centralized exception handler for validation, authentication, authorization, and general errors.
+
+---
+
+## API Documentation
+
+### Auth
+
+| Endpoint         | Method | Description             |
+| ---------------- | ------ | ----------------------- |
+| `/auth/register` | POST   | Register a new user     |
+| `/auth/login`    | POST   | Login and receive token |
+| `/auth/logout`   | POST   | Logout and revoke token |
+
+### Tasks
+
+| Endpoint                   | Method | Description                    |
+| -------------------------- | ------ | ------------------------------ |
+| `/tasks`                   | GET    | List all tasks                 |
+| `/tasks`                   | POST   | Create a new task              |
+| `/tasks/{id}`              | GET    | Get task by ID                 |
+| `/tasks/{id}`              | PUT    | Update a task                  |
+| `/tasks/{id}/dependencies` | POST   | Add dependencies to a task     |
+| `/tasks?status=completed`  | GET    | Filter tasks by status         |
+| `/tasks?due_from=&due_to=` | GET    | Filter tasks by due date range |
+
+---
+
+## Postman Collection
+
+The Postman collection is included as `TaskManagementAPI.postman_collection.json`.
+
+**Features:**
+
+* Organized by `Auth` and `Tasks` folders.
+* Automatically sets bearer token after login.
+* Includes test scripts to capture IDs for dynamic requests.
+* Supports filtering tasks and managing dependencies.
+
+**How to Use:**
+
+1. Import `TaskManagementAPI.postman_collection.json` into Postman.
+2. Set `{{base_url}}` variable to `http://localhost:8000/api`.
+3. Login with a user to populate `{{token}}`.
+4. Run API requests sequentially or use the collection runner.
+
+---
+
+## Tests
+
+The project uses PHPUnit for testing:
+
+```bash
+php artisan test
+```
+
+**Tests Cover:**
+
+* Authentication (register, login, logout)
+* Task CRUD operations
+* Task filtering
+* Authorization policies
+
+> Tip: Ensure your `.env.testing` database is configured for testing.
+
+---
+
+## Error Handling
+
+All API errors return a consistent JSON structure:
+
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "errors": { "field": ["Error detail"] }
+}
+```
+
+**Common Exceptions:**
+
+| Exception Type            | HTTP Code | Message                                      |
+| ------------------------- | --------- | -------------------------------------------- |
+| ValidationException       | 422       | Validation failed                            |
+| AuthorizationException    | 403       | Forbidden: You do not have permission        |
+| UnauthorizedHttpException | 401       | Unauthenticated: You must be logged in       |
+| NotFoundHttpException     | 404       | Resource not found                           |
+| HttpException             | Variable  | Custom HTTP exception messages               |
+| Other exceptions          | 500       | Something went wrong (detailed in local env) |
+
+---
+
+## Reviewer Quick Start Guide
+
+### 1. Set Up Postman
+
+* Import `TaskManagementAPI.postman_collection.json`.
+* Set `{{base_url}}` variable to `http://localhost:8000/api`.
+
+### 2. Register a User (Optional)
+
+**Endpoint:** `POST /auth/register`
+**Body Example:**
+
+```json
+{
+  "name": "John Manager",
+  "email": "manager@example.com",
+  "password": "password",
+  "password_confirmation": "password",
+  "role": "manager"
+}
+```
+
+> Skip this if a test user already exists.
+
+### 3. Login
+
+**Endpoint:** `POST /auth/login`
+**Body Example:**
+
+```json
+{
+  "email": "manager@example.com",
+  "password": "password"
+}
+```
+
+Postman will automatically save the token in `{{token}}`.
+
+### 4. Create a Task
+
+**Endpoint:** `POST /tasks`
+**Body Example:**
+
+```json
+{
+  "title": "New Task",
+  "description": "Task description",
+  "due_date": "2025-09-15",
+  "assignee_id": 2
+}
+```
+
+### 5. Update a Task
+
+**Endpoint:** `PUT /tasks/{id}`
+**Body Example:**
+
+```json
+{
+  "status": "completed"
+}
+```
+
+### 6. Add Task Dependencies
+
+**Endpoint:** `POST /tasks/{id}/dependencies`
+**Body Example:**
+
+```json
+{
+  "dependencies": [1, 2]
+}
+```
+
+### 7. View & Filter Tasks
+
+* **Get All Tasks:** `GET /tasks`
+* **Filter by Status:** `GET /tasks?status=completed`
+* **Filter by Due Date:** `GET /tasks?due_from=2025-09-01&due_to=2025-09-30`
+* **Get Task by ID:** `GET /tasks/{id}`
+
+### 8. Logout
+
+**Endpoint:** `POST /auth/logout`
+
+This will revoke your token.
+
+---
+
+### Notes
+
+* All requests require `Authorization: Bearer {{token}}` header (except register/login).
+* All responses are JSON with consistent `success`, `message`, and `data`.
+* Validation errors return `422` with field-level messages.
+* Forbidden actions return `403` with explanatory messages.
+
+---
+
