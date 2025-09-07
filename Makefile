@@ -23,3 +23,6 @@ logs:
 
 tinker:
 	docker exec -it task-management-app php artisan tinker
+
+test:
+	docker exec -it task-management-app php artisan test

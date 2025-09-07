@@ -4,28 +4,36 @@ This is the Task Management System API, built with Laravel 12 and Sanctum authen
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Installation](#installation)
-- [Environment Setup](#environment-setup)
-- [Running the Project](#running-the-project)
-- [Approach](#approach)
-- [API Documentation](#api-documentation)
-- [Postman Collection](#postman-collection)
-- [Tests](#tests)
-- [Error Handling](#error-handling)
-- [Reviewer Quick Start Guide](#reviewer-quick-start-guide)
-- [License](#license)
+* [Project Overview](#project-overview)
+* [Installation](#installation)
+* [Environment Setup](#environment-setup)
+
+  * [Local Environment](#local-environment)
+  * [Docker Environment](#docker-environment)
+* [Running the Project](#running-the-project)
+
+  * [Option 1: Laravel Artisan (Local)](#option-1-laravel-artisan-local)
+  * [Option 2: Docker with Make](#option-2-docker-with-make)
+  * [Option 3: Docker without Make](#option-3-docker-without-make)
+* [Approach](#approach)
+* [API Documentation](#api-documentation)
+* [Postman Collection](#postman-collection)
+* [Tests](#tests)
+* [Error Handling](#error-handling)
+* [Reviewer Quick Start Guide](#reviewer-quick-start-guide)
+* [License](#license)
 
 ---
 
 ## Project Overview
 
 This API allows users to:
-- Register and login with roles (manager, user)
-- Perform CRUD operations on tasks
-- Assign tasks to users
-- Track task dependencies
-- Filter tasks by status or due date range
+
+* Register and login with roles (manager, user)
+* Perform CRUD operations on tasks
+* Assign tasks to users
+* Track task dependencies
+* Filter tasks by status or due date range
 
 The API uses Laravel Policies for authorization and Sanctum for API token-based authentication. Responses follow a consistent JSON structure:
 
@@ -35,7 +43,7 @@ The API uses Laravel Policies for authorization and Sanctum for API token-based 
   "message": "Task created successfully",
   "data": {...}
 }
-````
+```
 
 ---
 
@@ -58,16 +66,21 @@ composer install
 
 ## Environment Setup
 
+### Local Environment
+
 Copy `.env.example` to `.env`:
 
 ```bash
 cp .env.example .env
 ```
 
-Set your environment variables:
+Example local configuration:
 
-```
+```env
 APP_NAME=TaskManagementAPI
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
 APP_URL=http://localhost:8000
 
 DB_CONNECTION=mysql
@@ -77,12 +90,38 @@ DB_DATABASE=task_management
 DB_USERNAME=root
 DB_PASSWORD=
 
-Or 
+# or use sqlite
+# DB_CONNECTION=sqlite
+```
 
-DB_CONNECTION=sqlite
+### Docker Environment
 
+When running with Docker, update `.env` with container-based settings:
 
-SANCTUM_STATEFUL_DOMAINS=localhost:8000
+```env
+APP_NAME=TaskManagementAPI
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=task_management
+DB_USERNAME=laravel
+DB_PASSWORD=root
+
+CACHE_STORE=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+REDIS_CLIENT=phpredis
+REDIS_HOST=redis
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+REDIS_DB=0
+REDIS_CACHE_DB=1
 ```
 
 Generate the application key:
@@ -101,15 +140,116 @@ php artisan migrate --seed
 
 ## Running the Project
 
-Start the Laravel development server:
+### Option 1: Laravel Artisan (Local)
 
 ```bash
 php artisan serve
 ```
 
-Your API will be available at `http://localhost:8000/api`.
 
 ---
+
+### Option 2: Docker with Make
+
+If your system supports `make`, you can use the provided `Makefile`.
+
+Start containers:
+
+```bash
+make up
+```
+
+Stop containers:
+
+```bash
+make down
+```
+
+Run migrations with seeders:
+
+```bash
+make migrate
+```
+
+Generate app key:
+
+```bash
+make key
+```
+
+Link storage:
+
+```bash
+make storage
+```
+
+View logs:
+
+```bash
+make logs
+```
+
+Run tests:
+
+```bash
+make test
+```
+
+Open tinker shell:
+
+```bash
+make tinker
+```
+
+---
+
+### Option 3: Docker without Make
+
+If you don’t have `make` installed, use Docker Compose directly:
+
+Start containers:
+
+```bash
+docker compose up -d --build
+```
+
+Stop containers:
+
+```bash
+docker compose down
+```
+
+Run migrations with seeders:
+
+```bash
+docker exec -it task-management-app php artisan migrate --seed
+```
+
+Generate app key:
+
+```bash
+docker exec -it task-management-app php artisan key:generate
+```
+
+Link storage:
+
+```bash
+docker exec -it task-management-app php artisan storage:link
+```
+
+Run tests:
+
+```bash
+docker exec -it task-management-app php artisan test
+```
+
+---
+
+Your API will be available at:
+👉 `http://localhost:8000/api`
+
+---
+
 
 ## Approach
 
@@ -129,18 +269,17 @@ Your API will be available at `http://localhost:8000/api`.
 
 ## API Documentation
 
+### Seeded Users
 
-### Seeded Users ###
+| Email                                                        | Password | Role    |
+| ------------------------------------------------------------ | -------- | ------- |
+| [test\_manager@example.com](mailto:test_manager@example.com) | password | manager |
+| [test\_user@example.com](mailto:test_user@example.com)       | password | user    |
+| [test\_user2@example.com](mailto:test_user2@example.com)     | password | user    |
 
-| Email            | Password | Role    |
-| ---------------- | -------- | ------- |
-| test_manager@example.com | password | manager |
-| test_user@example.com | password | user |
-| test_user2@example.com | password | user |
+### Seeded Tasks
 
-### Seeded Tasks ###
-
-10 Seeded Tasks are created for these users with various statuses and due dates and dependencies.
+10 Seeded Tasks are created for these users with various statuses, due dates, and dependencies.
 
 ### Auth
 
@@ -152,16 +291,39 @@ Your API will be available at `http://localhost:8000/api`.
 
 ### Tasks
 
-| Endpoint                   | Method | Description                    |
-| -------------------------- | ------ | ------------------------------ |
-| `/tasks`                   | GET    | List all tasks                 |
-| `/tasks`                   | POST   | Create a new task              |
-| `/tasks/{id}`              | GET    | Get task by ID                 |
-| `/tasks/{id}`              | PUT    | Update a task                  |
-| `/tasks/{id}/dependencies` | POST   | Add dependencies to a task     |
-| `/tasks?status=completed`  | GET    | Filter tasks by status         |
-| `/tasks?due_from=&due_to=` | GET    | Filter tasks by due date range |
-|  `tasks?assignee_id={id}`  | GET    | Filter tasks by assignee       |
+| Endpoint                   | Method | Description                                  |
+| -------------------------- | ------ | -------------------------------------------- |
+| `/tasks`                   | GET    | List all tasks                               |
+| `/tasks`                   | POST   | Create a new task (can include dependencies) |
+| `/tasks/{id}`              | GET    | Get task by ID                               |
+| `/tasks/{id}`              | PUT    | Update a task (can include dependencies)     |
+| `/tasks/{id}/dependencies` | POST   | Add dependencies to a task                   |
+| `/tasks?status=completed`  | GET    | Filter tasks by status                       |
+| `/tasks?due_from=&due_to=` | GET    | Filter tasks by due date range               |
+| `/tasks?assignee_id={id}`  | GET    | Filter tasks by assignee                     |
+
+---
+
+### Example: Create a Task with Dependencies
+
+```json
+{
+  "title": "New Feature Task",
+  "description": "Implement feature X",
+  "due_date": "2025-09-15",
+  "assignee_id": 2,
+  "dependencies": [1, 3, 5]
+}
+```
+
+### Example: Update a Task with Dependencies
+
+```json
+{
+  "status": "in_progress",
+  "dependencies": [2, 4]
+}
+```
 
 ---
 
@@ -208,20 +370,20 @@ All API errors return a consistent JSON structure:
 ```json
 {
   "success": false,
-  "message": "Error message",
+  "message": "Error message"
 }
 ```
 
 **Common Exceptions:**
 
-| Exception Type            | HTTP Code | Message                                      |
-| ------------------------- | --------- | -------------------------------------------- |
-| ValidationException       | 422       | Validation failed                            |
-| AuthorizationException    | 403       | Forbidden: You do not have permission        |
-| UnauthorizedHttpException | 401       | Unauthenticated: You must be logged in       |
-| NotFoundHttpException     | 404       | Resource not found                           |
-| HttpException             | Variable  | Custom HTTP exception messages               |
-| Other exceptions          | 500       | Something went wrong (detailed in local env) |
+| Exception Type            | HTTP Code | Message                                |
+| ------------------------- | --------- | -------------------------------------- |
+| ValidationException       | 422       | Validation failed                      |
+| AuthorizationException    | 403       | Forbidden: You do not have permission  |
+| UnauthorizedHttpException | 401       | Unauthenticated: You must be logged in |
+| NotFoundHttpException     | 404       | Resource not found                     |
+| HttpException             | Variable  | Custom HTTP exception messages         |
+| Other exceptions          | 500       | Something went wrong (local only)      |
 
 ---
 
@@ -247,8 +409,6 @@ All API errors return a consistent JSON structure:
 }
 ```
 
-> Skip this if a test user already exists.
-
 ### 3. Login
 
 **Endpoint:** `POST /auth/login`
@@ -273,7 +433,8 @@ Postman will automatically save the token in `{{token}}`.
   "title": "New Task",
   "description": "Task description",
   "due_date": "2025-09-15",
-  "assignee_id": 2
+  "assignee_id": 2,
+  "dependencies": [1, 2]
 }
 ```
 
@@ -284,7 +445,8 @@ Postman will automatically save the token in `{{token}}`.
 
 ```json
 {
-  "status": "completed"
+  "status": "completed",
+  "dependencies": [3, 4]
 }
 ```
 
@@ -304,6 +466,7 @@ Postman will automatically save the token in `{{token}}`.
 * **Get All Tasks:** `GET /tasks`
 * **Filter by Status:** `GET /tasks?status=completed`
 * **Filter by Due Date:** `GET /tasks?due_from=2025-09-01&due_to=2025-09-30`
+* **Filter by Assignee:** `GET /tasks?assignee_id={id}`
 * **Get Task by ID:** `GET /tasks/{id}`
 
 ### 8. Logout
