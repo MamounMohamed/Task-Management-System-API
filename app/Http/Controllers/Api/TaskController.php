@@ -27,7 +27,7 @@ class TaskController extends Controller
 
         // users only see their tasks
         if ($request->user()->role === 'user') {
-            $tasks = $tasks->where('assigned_user_id', $request->user()->id);
+            $tasks = $tasks->where('assignee_id', $request->user()->id);
         }
 
         return
