@@ -7,11 +7,9 @@ This is the Task Management System API, built with Laravel 12 and Sanctum authen
 * [Project Overview](#project-overview)
 * [Installation](#installation)
 * [Environment Setup](#environment-setup)
-
   * [Local Environment](#local-environment)
   * [Docker Environment](#docker-environment)
 * [Running the Project](#running-the-project)
-
   * [Option 1: Laravel Artisan (Local)](#option-1-laravel-artisan-local)
   * [Option 2: Docker with Make](#option-2-docker-with-make)
   * [Option 3: Docker without Make](#option-3-docker-without-make)
@@ -22,7 +20,6 @@ This is the Task Management System API, built with Laravel 12 and Sanctum authen
 * [Error Handling](#error-handling)
 * [Reviewer Quick Start Guide](#reviewer-quick-start-guide)
 * [License](#license)
-
 ---
 
 ## Project Overview
