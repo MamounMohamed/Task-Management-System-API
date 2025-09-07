@@ -161,6 +161,7 @@ Your API will be available at `http://localhost:8000/api`.
 | `/tasks/{id}/dependencies` | POST   | Add dependencies to a task     |
 | `/tasks?status=completed`  | GET    | Filter tasks by status         |
 | `/tasks?due_from=&due_to=` | GET    | Filter tasks by due date range |
+|  `tasks?assignee_id={id}`  | GET    | Filter tasks by assignee       |
 
 ---
 
