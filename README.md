@@ -126,13 +126,6 @@ Generate the application key:
 ```bash
 php artisan key:generate
 ```
-
-Run database migrations and seeders:
-
-```bash
-php artisan migrate --seed
-```
-
 ---
 
 ## Running the Project
@@ -150,102 +143,115 @@ php artisan serve
 
 If your system supports `make`, you can use the provided `Makefile`.
 
-Start containers:
+### Step 1: Start containers
 
 ```bash
 make up
 ```
 
-Stop containers:
-
-```bash
-make down
-```
-
-Run migrations with seeders:
+### Step 2: Run migrations with seeders
 
 ```bash
 make migrate
 ```
 
-Generate app key:
+### Step 3: Generate the application key if not generated 
 
 ```bash
 make key
 ```
 
-Link storage:
+### Step 4: Create the storage symlink
 
 ```bash
 make storage
 ```
 
-View logs:
-
-```bash
-make logs
-```
-
-Run tests:
+### (optional): Run tests
 
 ```bash
 make test
 ```
 
-Open tinker shell:
+### (optional): Use Tinker
 
 ```bash
 make tinker
 ```
 
+### (optional): View logs
+
+```bash
+make logs
+```
+
+### (Optional):Stop containers
+
+```bash
+make down
+```
+
+👉 After step 1–4, your API will be running at:
+**[http://localhost:8000/api](http://localhost:8000/api)**
+
+---
+
 ---
 
 ### Option 3: Docker without Make
 
-If you don’t have `make` installed, use Docker Compose directly:
+If you don’t have `make` installed, use Docker Compose commands directly.
 
-Start containers:
+### Step 1: Start containers
 
-```bash
+```powershell
 docker compose up -d --build
 ```
 
-Stop containers:
+### Step 2: Run migrations with seeders
 
-```bash
-docker compose down
-```
-
-Run migrations with seeders:
-
-```bash
+```powershell
 docker exec -it task-management-app php artisan migrate --seed
 ```
 
-Generate app key:
+### Step 3: Generate the application key
 
-```bash
+```powershell
 docker exec -it task-management-app php artisan key:generate
 ```
 
-Link storage:
+### Step 4: Create the storage symlink
 
-```bash
+```powershell
 docker exec -it task-management-app php artisan storage:link
 ```
 
-Run tests:
+### (optional): Run tests
 
-```bash
+```powershell
 docker exec -it task-management-app php artisan test
 ```
 
----
+### (optional): Use Tinker
 
-Your API will be available at:
-👉 `http://localhost:8000/api`
+```powershell
+docker exec -it task-management-app php artisan tinker
+```
 
----
+### (optional): View logs
+
+```powershell
+docker compose logs -f app
+```
+
+### (optional): Stop containers
+
+```powershell
+docker compose down
+```
+
+👉 After step 1–4, your API will be running at:
+**[http://localhost:8000/api](http://localhost:8000/api)**---
 
 
 ## Approach
