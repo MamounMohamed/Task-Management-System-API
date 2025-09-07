@@ -121,7 +121,9 @@ Your API will be available at `http://localhost:8000/api`.
 * **Exception Handling**: Centralized exception handler for validation, authentication, authorization, and general errors.
 * **Testing**: Unit and feature tests for API functionality.
 * **Security**: Authentication and authorization using Laravel Sanctum.
-
+* **Documentation**: README.md file with API documentation.
+* **Reviewer Quick Start Guide**: Steps to quickly test the API.
+* **Erd**: Entity-Relationship Diagram (ERD) for the database. at ./erd.svg
 
 ---
 
