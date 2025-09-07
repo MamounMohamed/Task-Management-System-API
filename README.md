@@ -351,10 +351,23 @@ The Postman collection is included as `TaskManagementAPI.postman_collection.json
 
 The project uses PHPUnit for testing:
 
+Run tests locally:
+
 ```bash
 php artisan test
 ```
 
+Run tests in Docker:
+
+```bash
+make test
+```
+
+or
+
+```bash
+docker exec -it task-management-app php artisan test
+```
 **Tests Cover:**
 
 * Authentication (register, login, logout)
