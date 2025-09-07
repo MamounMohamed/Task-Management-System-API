@@ -76,14 +76,17 @@ class TaskControllerTest extends TestCase
     public function user_can_only_see_their_tasks()
     {
         $taskForUser = Task::factory()->create(['assignee_id' => $this->user->id]);
-        $taskForOther = Task::factory()->create();
+        $taskForOther = Task::factory()->create(['assignee_id' => User::factory()->create()->id]);
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->getJson('/api/tasks');
 
-        $response->assertOk()
-            ->assertJsonFragment(['id' => $taskForUser->id])
-            ->assertJsonMissing(['id' => $taskForOther->id]);
+        $response->assertOk();
+
+        $taskIds = collect($response->json('data'))->pluck('id');
+
+        $this->assertTrue($taskIds->contains($taskForUser->id));
+        $this->assertFalse($taskIds->contains($taskForOther->id));
     }
 
     /** @test */
@@ -103,14 +106,18 @@ class TaskControllerTest extends TestCase
     {
         $completedTask = Task::factory()->create(['status' => 'completed']);
         $pendingTask = Task::factory()->create(['status' => 'pending']);
-        
+
         $response = $this->actingAs($this->manager, 'sanctum')
             ->getJson('/api/tasks?status=completed');
 
-        $response->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonFragment(['id' => $completedTask->id])
-            ->assertJsonMissing(['id' => $pendingTask->id]);
+        $response->assertOk();
+        $response->assertJsonCount(1, 'data');
+
+        // Extract the IDs from the response
+        $taskIds = collect($response->json('data'))->pluck('id');
+
+        $this->assertTrue($taskIds->contains($completedTask->id));
+        $this->assertFalse($taskIds->contains($pendingTask->id));
     }
 
     /** @test */
