@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "208e0a6c-a16d-430e-b8be-2dcf9ff30d5f",
+		"_postman_id": "e123c6f8-a7aa-44bc-9d43-0e459368db13",
 		"name": "Task Management API",
 		"description": "Postman collection for Task Management System API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "27667977"
+		"_exporter_id": "28193617",
+		"_collection_link": "https://www.postman.com/crimson-desert-537316/workspace/task-mamagment-api/collection/28193617-e123c6f8-a7aa-44bc-9d43-0e459368db13?action=share&source=collection_link&creator=28193617"
 	},
 	"item": [
 		{
@@ -357,6 +358,29 @@
 								{
 									"key": "due_to",
 									"value": "2025-09-30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter Tasks by assigned user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tasks?assignee_id=2",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "assignee_id",
+									"value": "2"
 								}
 							]
 						}
