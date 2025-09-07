@@ -10,7 +10,7 @@ class TaskStoreRequest extends FormRequest
     {
         return $this->user()->can('create', \App\Models\Task::class);
     }
-
+    
     public function rules(): array
     {
         return [

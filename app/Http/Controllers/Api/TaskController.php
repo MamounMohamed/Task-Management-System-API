@@ -11,9 +11,13 @@ use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class TaskController extends Controller
 {
+    use AuthorizesRequests;
+
     protected TaskService $service;
 
     public function __construct(TaskService $service)
@@ -23,6 +27,7 @@ class TaskController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Task::class);
         $filters = $request->only(['status', 'assignee_id', 'due_from', 'due_to']);
         $tasks = $this->service->filter($filters);
 
@@ -35,10 +40,12 @@ class TaskController extends Controller
     }
 
     public function store(TaskStoreRequest $request)
+
     {
+        $this->authorize('create', Task::class);
         try {
             $task = $this->service->create($request->validated());
-            return $this->successResponse(data: TaskResource::make($task) , message: 'Task created successfully' , statusCode:201); 
+            return $this->successResponse(data: TaskResource::make($task), message: 'Task created successfully', statusCode: 201);
         } catch (HttpException $e) {
             return $this->errorResponse($e->getMessage(), $e->getStatusCode());
         }
@@ -46,14 +53,16 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
+        $this->authorize('view', $task);
         return $this->successResponse(data: TaskResource::make($task->load('dependencies', 'assignee', 'creator')));
     }
 
     public function update(TaskUpdateRequest $request, Task $task)
     {
+        $this->authorize('update', $task);
         try {
             $task = $this->service->update($task, $request->validated());
-            return $this->successResponse(data: TaskResource::make($task) , message: 'Task updated successfully');
+            return $this->successResponse(data: TaskResource::make($task), message: 'Task updated successfully');
         } catch (HttpException $e) {
             return $this->errorResponse($e->getMessage(), $e->getStatusCode());
         }
@@ -61,6 +70,7 @@ class TaskController extends Controller
 
     public function addDependencies(TaskDependencyRequest $request, Task $task)
     {
+        $this->authorize('update', $task);
         try {
             $task = $this->service->addDependencies($task, $request->dependencies);
             return $this->successResponse(data: TaskResource::make($task));

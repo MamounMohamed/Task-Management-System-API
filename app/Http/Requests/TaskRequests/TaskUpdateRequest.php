@@ -16,7 +16,6 @@ class TaskUpdateRequest extends FormRequest
     public function rules(): array
     {
         $user = $this->user();
-        $task = $this->route('task');
 
         if ($user->role === 'manager') {
             return [
@@ -24,7 +23,7 @@ class TaskUpdateRequest extends FormRequest
                 'description' => 'sometimes|nullable|string',
                 'due_date' => 'sometimes|nullable|date|after:today',
                 'assignee_id' => 'sometimes|nullable|exists:users,id',
-                'status' => 'sometimes|in:pending,completed,canceled',
+                'status' => 'sometimes|in:pending,completed,cancelled',
                 'dependencies' => 'sometimes|nullable|array',
                 'dependencies.*' => 'sometimes|exists:tasks,id|different:task_id',
             ];
