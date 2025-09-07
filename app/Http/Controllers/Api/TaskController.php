@@ -10,13 +10,9 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
 
 class TaskController extends Controller
 {
-    use AuthorizesRequests;
 
     protected TaskService $service;
 
@@ -43,39 +39,31 @@ class TaskController extends Controller
 
     {
         $this->authorize('create', Task::class);
-        try {
-            $task = $this->service->create($request->validated());
-            return $this->successResponse(data: TaskResource::make($task), message: 'Task created successfully', statusCode: 201);
-        } catch (HttpException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getStatusCode());
-        }
+        $task = $this->service->create($request->validated());
+        return $this->successResponse(data: TaskResource::make($task), message: 'Task created successfully', statusCode: 201);
     }
 
     public function show(Task $task)
     {
         $this->authorize('view', $task);
-        return $this->successResponse(data: TaskResource::make($task->load('dependencies', 'assignee', 'creator')));
-    }
 
+        return $this->successResponse(
+            data: TaskResource::make(
+                $task->load('dependencies', 'assignee', 'creator')
+            )
+        );
+    }
     public function update(TaskUpdateRequest $request, Task $task)
     {
         $this->authorize('update', $task);
-        try {
-            $task = $this->service->update($task, $request->validated());
-            return $this->successResponse(data: TaskResource::make($task), message: 'Task updated successfully');
-        } catch (HttpException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getStatusCode());
-        }
+        $task = $this->service->update($task, $request->validated());
+        return $this->successResponse(data: TaskResource::make($task), message: 'Task updated successfully');
     }
 
     public function addDependencies(TaskDependencyRequest $request, Task $task)
     {
         $this->authorize('update', $task);
-        try {
-            $task = $this->service->addDependencies($task, $request->dependencies);
-            return $this->successResponse(data: TaskResource::make($task));
-        } catch (HttpException $e) {
-            return $this->errorResponse($e->getMessage(), $e->getStatusCode());
-        }
+        $task = $this->service->addDependencies($task, $request->dependencies);
+        return $this->successResponse(data: TaskResource::make($task));
     }
 }

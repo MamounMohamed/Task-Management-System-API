@@ -24,10 +24,14 @@ class AuthController extends Controller
         $user = User::create($data);
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return response()->json([
-            'user' => UserResource::make($user),
-            'token' => $token,
-        ], 201);
+        return $this->successResponse(
+            data: [
+                'user' => UserResource::make($user),
+                'token' => $token,
+            ],
+            message: 'User registered successfully',
+            statusCode: 201
+        );
     }
 
     /**
@@ -45,10 +49,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('api_token')->plainTextToken;
 
-        return $this->successResponse(data: [
-            'user' => UserResource::make($user),
-            'token' => $token,
-        ]);
+        return $this->successResponse(
+            data: [
+                'user' => UserResource::make($user),
+                'token' => $token,
+            ],
+            message: 'User logged in successfully',
+
+        );
     }
 
     /**
