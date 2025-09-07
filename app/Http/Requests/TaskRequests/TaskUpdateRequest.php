@@ -30,7 +30,7 @@ class TaskUpdateRequest extends FormRequest
         }
 
         return [
-            'status' => 'required|in:pending,completed,canceled',
+            'status' => 'required|in:pending,completed,cancelled',
         ];
     }
 }
