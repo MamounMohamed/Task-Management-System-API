@@ -21,7 +21,6 @@ This is the Task Management System API, built with Laravel 12 and Sanctum authen
 ## Project Overview
 
 This API allows users to:
-
 - Register and login with roles (manager, user)
 - Perform CRUD operations on tasks
 - Assign tasks to users
@@ -117,12 +116,29 @@ Your API will be available at `http://localhost:8000/api`.
 * **Clean Architecture**: Controllers handle requests, Services handle business logic, and Resources handle API responses.
 * **Policies**: Laravel policies protect endpoints based on user roles.
 * **Validation**: Requests are validated using custom FormRequest classes.
+* **Seedeed Data**: Database seeders populate the database with sample data.
 * **Consistent Responses**: All API responses are standardized with `success`, `message`, and `data`.
 * **Exception Handling**: Centralized exception handler for validation, authentication, authorization, and general errors.
+* **Testing**: Unit and feature tests for API functionality.
+* **Security**: Authentication and authorization using Laravel Sanctum.
+
 
 ---
 
 ## API Documentation
+
+
+### Seeded Users ###
+
+| Email            | Password | Role    |
+| ---------------- | -------- | ------- |
+| test_manager@example.com | password | manager |
+| test_user@example.com | password | user |
+| test_user2@example.com | password | user |
+
+### Seeded Tasks ###
+
+10 Seeded Tasks are created for these users with various statuses and due dates and dependencies.
 
 ### Auth
 
@@ -179,7 +195,6 @@ php artisan test
 * Authentication (register, login, logout)
 * Task CRUD operations
 * Task filtering
-* Authorization policies
 
 ---
 
