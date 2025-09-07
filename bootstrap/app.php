@@ -5,9 +5,9 @@ use Illuminate\Foundation\Application;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
+        web: __DIR__ . '/../routes/web.php',
+        api: __DIR__ . '/../routes/api.php',
+        commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function ($middleware): void {
@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         // Unauthenticated
-        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException $e, $request) {
+        $exceptions->renderable(function (\Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException | \Illuminate\Auth\AuthenticationException $e, $request) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
