@@ -16,8 +16,8 @@ class TaskStoreRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'due_date' => 'nullable|date|after:today',
-            'assignee_id' => 'nullable|exists:users,id',
+            'due_date' => 'required|date|after:today',
+            'assignee_id' => 'required|exists:users,id',
             'dependencies' => 'nullable|array',
             'dependencies.*' => 'exists:tasks,id|different:task_id',
         ];
