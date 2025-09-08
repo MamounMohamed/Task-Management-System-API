@@ -48,6 +48,31 @@ class TaskControllerTest extends TestCase
         ]);
     }
 
+    public function test_manager_can_not_create_task_with_invalid_data()
+    {
+        $payload1 = [
+            'title' => 'New Task',
+            'description' => 'Task details',
+        ];
+
+        $payload2 = [
+            'title' => 'New Task',
+            'description' => 'Task details',
+            'due_date' => '01/01/2026 00:00:00',
+        ];
+
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->postJson('/api/tasks', $payload1);
+
+        $reponse2 = $this->actingAs($this->manager, 'sanctum')
+            ->postJson('/api/tasks', $payload2);
+
+        $response->assertStatus(422)
+        ->assertJsonValidationErrors(['due_date' , 'assignee_id']);
+        $reponse2->assertStatus(422) 
+        ->assertJsonValidationErrors(['assignee_id']);
+    }
+
 
     public function test_user_cannot_create_task()
     {
@@ -123,7 +148,7 @@ class TaskControllerTest extends TestCase
 
     public function test_user_can_update_only_their_task_status()
     {
-        $task = Task::factory()->create(['assignee_id' => $this->user->id]);
+        $task = Task::factory()->create(['assignee_id' => $this->user->id , 'status' => 'pending']);
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->putJson("/api/tasks/{$task->id}", ['status' => 'completed']);
@@ -146,7 +171,7 @@ class TaskControllerTest extends TestCase
 
     public function test_manager_can_update_all_task_fields()
     {
-        $task = Task::factory()->create();
+        $task = Task::factory()->create(['status' => 'pending']);
 
         $response = $this->actingAs($this->manager, 'sanctum')
             ->putJson("/api/tasks/{$task->id}", [
