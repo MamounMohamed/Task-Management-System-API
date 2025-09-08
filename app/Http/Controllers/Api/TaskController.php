@@ -16,38 +16,32 @@ class TaskController extends Controller
 {
 
     protected TaskService $service;
+    protected CacheService $cache;
 
-    public function __construct(TaskService $service)
+    public function __construct(TaskService $service, CacheService $cache)
     {
         $this->service = $service;
+        $this->cache = $cache->setTag('tasks'); 
     }
 
     public function index(Request $request)
     {
         $this->authorize('viewAny', Task::class);
         $filters = $request->only(['status', 'assignee_id', 'due_from', 'due_to']);
-
         if ($request->user()->role === 'user') {
             $filters['request_user_id'] = $request->user()->id;
         }
-
-        $page = request()->get('page', 1);
+        $page = $request->get('page', 1);
         $filters['page'] = $page;
-
-        $tasks = app(CacheService::class)->rememberTasks(
-            $filters,
-            function () use ($filters, $request) {
-                $query = $this->service->filter($filters);
-
-                return $query;
-            }
-        );
-
+        $tasks = $this->cache->rememberTasks($filters, function () use ($filters) {
+            return $this->service->filter($filters); // already paginated
+        });
         return $this->successResponse(data: TaskResource::collection($tasks));
     }
 
-    public function store(TaskStoreRequest $request)
 
+
+    public function store(TaskStoreRequest $request)
     {
         $this->authorize('create', Task::class);
         $task = $this->service->create($request->validated());

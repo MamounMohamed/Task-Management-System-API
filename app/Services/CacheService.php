@@ -14,10 +14,15 @@ class CacheService
         $this->tag = $tag;
     }
 
+    public function setTag(string $tag): self
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+  
     public function rememberTasks(array $filters, \Closure $callback)
     {
         $key = $this->getCacheKey($filters);
-
         return Cache::tags($this->tag)->remember(
             $key,
             now()->addMinutes(10),
