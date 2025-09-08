@@ -23,8 +23,8 @@ class TaskControllerTest extends TestCase
         $this->user = User::factory()->create(['role' => 'user']);
     }
 
-    /** @test */
-    public function manager_can_create_a_task()
+
+    public function test_manager_can_create_a_task()
     {
         $dependency = Task::factory()->create();
         $payload = [
@@ -48,8 +48,8 @@ class TaskControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
-    public function user_cannot_create_task()
+
+    public function test_user_cannot_create_task()
     {
         $payload = ['title' => 'Forbidden'];
 
@@ -59,8 +59,8 @@ class TaskControllerTest extends TestCase
         $response->assertForbidden();
     }
 
-    /** @test */
-    public function validation_fails_with_invalid_data()
+
+    public function test_validation_fails_with_invalid_data()
     {
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/tasks', [
@@ -72,8 +72,8 @@ class TaskControllerTest extends TestCase
             ->assertJsonValidationErrors(['title', 'due_date']);
     }
 
-    /** @test */
-    public function user_can_only_see_their_tasks()
+
+    public function test_user_can_only_see_their_tasks()
     {
         $taskForUser = Task::factory()->create(['assignee_id' => $this->user->id]);
         $taskForOther = Task::factory()->create(['assignee_id' => User::factory()->create()->id]);
@@ -89,8 +89,8 @@ class TaskControllerTest extends TestCase
         $this->assertFalse($taskIds->contains($taskForOther->id));
     }
 
-    /** @test */
-    public function manager_can_see_all_tasks()
+
+    public function test_manager_can_see_all_tasks()
     {
         Task::factory(3)->create();
 
@@ -101,8 +101,8 @@ class TaskControllerTest extends TestCase
             ->assertJsonCount(3, 'data');
     }
 
-    /** @test */
-    public function can_filter_tasks_by_status_and_date_range()
+
+    public function test_can_filter_tasks_by_status_and_date_range()
     {
         $completedTask = Task::factory()->create(['status' => 'completed']);
         $pendingTask = Task::factory()->create(['status' => 'pending']);
@@ -120,8 +120,8 @@ class TaskControllerTest extends TestCase
         $this->assertFalse($taskIds->contains($pendingTask->id));
     }
 
-    /** @test */
-    public function user_can_update_only_their_task_status()
+
+    public function test_user_can_update_only_their_task_status()
     {
         $task = Task::factory()->create(['assignee_id' => $this->user->id]);
 
@@ -132,8 +132,8 @@ class TaskControllerTest extends TestCase
             ->assertJsonPath('data.status', 'completed');
     }
 
-    /** @test */
-    public function user_cannot_update_task_details()
+
+    public function test_user_cannot_update_task_details()
     {
         $task = Task::factory()->create(['assignee_id' => $this->user->id]);
 
@@ -143,8 +143,8 @@ class TaskControllerTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
-    public function manager_can_update_all_task_fields()
+
+    public function test_manager_can_update_all_task_fields()
     {
         $task = Task::factory()->create();
 
@@ -158,8 +158,8 @@ class TaskControllerTest extends TestCase
             ->assertJsonPath('data.title', 'Updated');
     }
 
-    /** @test */
-    public function cannot_mark_completed_if_dependencies_are_not_done()
+
+    public function test_cannot_mark_completed_if_dependencies_are_not_done()
     {
         $dep = Task::factory()->create(['status' => 'pending']);
         $task = Task::factory()->create(['status' => 'pending']);
@@ -172,12 +172,18 @@ class TaskControllerTest extends TestCase
             ->assertJsonFragment(['message' => 'Task cannot be marked completed until all dependencies are done.']);
     }
 
-    /** @test */
-    public function manager_can_add_dependencies()
+
+    public function test_manager_can_add_dependencies()
     {
-        $task = Task::factory()->create();
-        $dep1 = Task::factory()->create();
-        $dep2 = Task::factory()->create();
+        $task = Task::factory()->create([
+            'status' => 'pending',
+        ]);
+        $dep1 = Task::factory()->create(
+            ['status' => 'pending']
+        );
+        $dep2 = Task::factory()->create(
+            ['status' => 'pending']
+        );
 
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson("/api/tasks/{$task->id}/dependencies", [
@@ -193,5 +199,73 @@ class TaskControllerTest extends TestCase
             'task_id' => $task->id,
             'dependency_id' => $dep2->id
         ]);
+    }
+
+    public function test_manager_can_not_add_dependencies_after_completion()
+    {
+        $task = Task::factory()->create([
+            'status' => 'completed',
+        ]);
+        $dep1 = Task::factory()->create(
+            ['status' => 'pending']
+        );
+        $dep2 = Task::factory()->create(
+            ['status' => 'pending']
+        );
+
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->postJson("/api/tasks/{$task->id}/dependencies", [
+                'dependencies' => [$dep1->id, $dep2->id],
+            ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_manager_can_update_task_due_date()
+    {
+        $task = Task::factory()->create([
+            'status' => 'pending',
+            'due_date' => now()->addDays(5)->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->putJson("/api/tasks/{$task->id}", [
+                'due_date' => now()->addDays(10)->toDateString(),
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.due_date', now()->addDays(10)->toDateString());
+    }
+
+    public function test_manager_can_not_update_task_after_completion()
+    {
+        $task = Task::factory()->create([
+            'status' => 'completed',
+            'due_date' => now()->addDays(5)->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->putJson("/api/tasks/{$task->id}", [
+                'due_date' => now()->addDays(10)->toDateString(),
+            ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_manager_can_not_update_task_with_past_due_date()
+    {
+        $task = Task::factory()->create([
+            'status' => 'pending',
+            'due_date' => now()->addDays(5)->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->manager, 'sanctum')
+            ->putJson("/api/tasks/{$task->id}", [
+                'title' => 'Updated',
+                'due_date' => now()->subDays(10)->toDateString(),
+                'assignee_id' => $this->user->id,
+            ]);
+
+        $response->assertStatus(422);
     }
 }
