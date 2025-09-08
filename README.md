@@ -551,9 +551,9 @@ REDIS_CACHE_DB=1
 * On task creation, update, or deletion, the related cache entries are automatically invalidated using Laravel cache tags.
 * Fetching tasks will automatically use the cached version if available.
 
-> Without `phpredis`, caching with tags will not function correctly.
+> Without `phpredis`, caching with tags will not function correctly. 
 
-```
+---
 
 ### Notes
 
