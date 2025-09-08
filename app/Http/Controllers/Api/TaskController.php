@@ -10,6 +10,7 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
+use App\Services\CacheService;
 
 class TaskController extends Controller
 {
@@ -25,12 +26,22 @@ class TaskController extends Controller
     {
         $this->authorize('viewAny', Task::class);
         $filters = $request->only(['status', 'assignee_id', 'due_from', 'due_to']);
-        $tasks = $this->service->filter($filters);
 
-        // users only see their tasks
         if ($request->user()->role === 'user') {
-            $tasks = $tasks->where('assignee_id', $request->user()->id);
+            $filters['request_user_id'] = $request->user()->id;
         }
+
+        $page = request()->get('page', 1);
+        $filters['page'] = $page;
+
+        $tasks = app(CacheService::class)->rememberTasks(
+            $filters,
+            function () use ($filters, $request) {
+                $query = $this->service->filter($filters);
+
+                return $query;
+            }
+        );
 
         return $this->successResponse(data: TaskResource::collection($tasks));
     }
@@ -47,12 +58,15 @@ class TaskController extends Controller
     {
         $this->authorize('view', $task);
 
-        return $this->successResponse(
-            data: TaskResource::make(
-                $task->load('dependencies', 'assignee', 'creator')
-            )
+        $task = app(CacheService::class)->rememberTask(
+            $task->id,
+            fn() => $task->load('dependencies', 'assignee', 'creator')
         );
+
+        return $this->successResponse(data: TaskResource::make($task));
     }
+
+
     public function update(TaskUpdateRequest $request, Task $task)
     {
         $this->authorize('update', $task);

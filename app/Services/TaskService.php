@@ -62,6 +62,10 @@ class TaskService
             $query->whereBetween('due_date', [$filters['due_from'], $filters['due_to']]);
         }
 
-        return $query->with('dependencies', 'assignee', 'creator')->get();
+        if (isset($filters['request_user_id'])) {
+            $query->where('assignee_id', $filters['request_user_id']);
+        }
+
+        return $query->with('dependencies', 'assignee', 'creator')->paginate(5);
     }
 }

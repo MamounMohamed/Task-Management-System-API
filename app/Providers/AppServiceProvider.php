@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Task;
 use App\Policies\TaskPolicy;
+use App\Observers\TaskObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         Gate::Policy(Task::class, TaskPolicy::class);
+        Task::observe(TaskObserver::class);
     }
 }
