@@ -16,7 +16,7 @@ class CheckTaskUpdateFields
 
         $requestFields = [];
         // Only apply restriction to non-manager users
-        if ($user && $user->role !== 'manager') {
+        if ($user && $user->role != 'manager') {
             $restrictedFields = ['title', 'description', 'assignee_id', 'due_date', 'dependencies'];
 
             foreach ($restrictedFields as $field) {

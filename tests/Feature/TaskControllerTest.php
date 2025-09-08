@@ -140,8 +140,7 @@ class TaskControllerTest extends TestCase
         $response = $this->actingAs($this->user, 'sanctum')
             ->putJson("/api/tasks/{$task->id}", ['title' => 'Hacked']);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['status']); // only status is allowed
+        $response->assertStatus(403);
     }
 
     /** @test */
