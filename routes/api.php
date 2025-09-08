@@ -14,7 +14,12 @@ Route::group(['prefix' => 'auth', 'as' => 'auth.'], function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('tasks', TaskController::class)->except(['destroy']);
+    Route::apiResource('tasks', TaskController::class)->except(['destroy', 'update']);
+
+    Route::put('/tasks/{task}', [TaskController::class, 'update'])
+    ->middleware(['update' => \App\Http\Middleware\CheckTaskUpdateFields::class])
+    ->name('tasks.update');
+
     Route::post('/tasks/{task}/dependencies', [TaskController::class, 'addDependencies'])
         ->name('tasks.dependencies.store');
 });

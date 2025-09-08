@@ -452,7 +452,9 @@ All API errors return a consistent JSON structure:
 | NotFoundHttpException     | 404       | Resource not found                     |
 | HttpException             | Variable  | Custom HTTP exception messages         |
 | Other exceptions          | 500       | Something went wrong (local only)      |
-
+| TaskUpdateException (user)| 403       | You are not authorized to update the field: title, description, assignee_id, due_date, dependencies |
+| TaskUpdateException       | 422       | Task cannot be updated after completetion |
+| AddDependenciesException  | 422       | Dependencies cannot be added after completetion |
 ---
 
 ## Reviewer Quick Start Guide

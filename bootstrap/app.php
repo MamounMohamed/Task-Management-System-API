@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function ($middleware): void {
-        //
+        $middleware->append(\App\Http\Middleware\CheckTaskUpdateFields::class);
     })
     ->withExceptions(function ($exceptions): void {
 

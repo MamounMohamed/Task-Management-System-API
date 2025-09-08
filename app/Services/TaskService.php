@@ -11,34 +11,61 @@ class TaskService
 {
     public function create(array $data): Task
     {
+        return DB::transaction(function () use ($data) {
+            $data['creator_id'] = auth()->guard('sanctum')->user()->id;
 
-        $data['creator_id'] = auth()->guard('sanctum')->user()->id;
-        $task = Task::create(Arr::except($data, ['dependencies']));
+            // Create the task
+            $task = Task::create(Arr::except($data, ['dependencies']));
 
-        if(isset($data['dependencies'])) {
-            $task->dependencies()->attach($data['dependencies']);
-        }
-        return $task;
+            // Attach dependencies if any
+            if (isset($data['dependencies'])) {
+                $task->dependencies()->attach($data['dependencies']);
+                $task->load('dependencies');
+            }
+            $task->load('assignee');
+
+            return $task;
+        });
     }
 
     public function update(Task $task, array $data): Task
     {
-        if (isset($data['status']) && $data['status'] === 'completed') {
-            $incompleteDeps = $task->dependencies()->where('status', '!=', 'completed')->exists();
-            if ($incompleteDeps) {
-                throw new HttpException(422, "Task cannot be marked completed until all dependencies are done.");
-            }
+        if($task->status === 'completed') {
+            throw new HttpException(422, "Task cannot be updated after completetion.");
         }
+        
 
-        $task->update(Arr::except($data, ['dependencies']));
-        if(isset($data['dependencies'])) {
-            $task->dependencies()->sync($data['dependencies']);
-        }
-        return $task;
+        return DB::transaction(function () use ($task, $data) {
+
+            if (isset($data['status']) && $data['status'] === 'completed') {
+                $incompleteDeps = $task->dependencies()->where('status', '!=', 'completed')->exists();
+                if ($incompleteDeps) {
+                    throw new HttpException(422, "Task cannot be marked completed until all dependencies are done.");
+                }
+            }
+
+            $task->update(Arr::except($data, ['dependencies']));
+
+            if (isset($data['dependencies'])) {
+                $task->dependencies()->sync($data['dependencies']);
+                $task->load('dependencies');
+            }
+
+            if (isset($data['assignee_id'])) {
+                $task->load('assignee');
+            }
+
+            return $task;
+        });
     }
+
 
     public function addDependencies(Task $task, array $dependencies): Task
     {
+        if ($task->status === 'completed') {
+            throw new HttpException(422, "Dependencies cannot be added after completetion.");
+        }
+
         DB::transaction(function () use ($task, $dependencies) {
             $task->dependencies()->syncWithoutDetaching($dependencies);
         });
