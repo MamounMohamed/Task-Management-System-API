@@ -99,6 +99,12 @@ php artisan key:generate
 
 ### Docker Environment
 
+Copy `.env.example` to `.env`:
+
+```bash
+cp .env.example .env
+```
+
 When running with Docker, update `.env` with container-based settings:
 
 ```env
