@@ -19,7 +19,7 @@ This is the Task Management System API, built with Laravel 12 and Sanctum authen
 * [Tests](#tests)
 * [Error Handling](#error-handling)
 * [Reviewer Quick Start Guide](#reviewer-quick-start-guide)
-* [License](#license)
+* [Caching (Branch: caching-using-redis)](#caching-branch-caching-using-redis)
 ---
 
 ## Project Overview
@@ -292,6 +292,9 @@ docker compose down
 * **Documentation**: README.md file with API documentation.
 * **Reviewer Quick Start Guide**: Steps to quickly test the API.
 * **Erd**: Entity-Relationship Diagram (ERD) for the database. at ./erd.svg
+* **Docker**: Docker files for local development and production.
+* **Makefile**: Automates common tasks.
+* **Caching**: Caches responses using Redis and tags in branch `caching-using-redis`.
 
 ---
 
@@ -517,6 +520,40 @@ Postman will automatically save the token in `{{token}}`.
 This will revoke your token.
 
 ---
+
+## Caching (Branch: caching-using-redis)
+
+This project now supports **robust caching using Redis** to improve performance when fetching tasks and task lists. The caching implementation uses Laravel cache tags to handle invalidation automatically when tasks are created, updated, or deleted.
+
+> **Important:** This caching system requires the `phpredis` extension. It will only work in environments where `phpredis` is installed, such as Docker or servers with the extension enabled. Cache tags do **not** work with the database cache driver.
+
+### Environment Configuration
+
+To enable caching with Redis, ensure your `.env` contains:
+
+```env
+CACHE_STORE=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+REDIS_CLIENT=phpredis
+REDIS_HOST=redis
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+REDIS_DB=0
+REDIS_CACHE_DB=1
+````
+
+### How It Works
+
+* Task lists are cached per filter set, with a unique cache key based on the filters.
+* Individual tasks are cached by their ID.
+* On task creation, update, or deletion, the related cache entries are automatically invalidated using Laravel cache tags.
+* Fetching tasks will automatically use the cached version if available.
+
+> Without `phpredis`, caching with tags will not function correctly.
+
+```
 
 ### Notes
 
