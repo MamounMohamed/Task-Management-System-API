@@ -173,6 +173,18 @@ make storage
 make test
 ```
 
+### (optional): seed data
+
+```bash
+make seed
+```
+
+### (optional): fresh seed data
+
+```bash
+make fresh-seed
+```
+
 ### (optional): Use Tinker
 
 ```bash
@@ -231,6 +243,19 @@ docker exec -it task-management-app php artisan storage:link
 docker exec -it task-management-app php artisan test
 ```
 
+### (optional): Seed data
+
+```powershell
+docker exec -it task-management-app php artisan db:seed
+```
+
+### (optional): Fresh seed data
+
+```powershell
+docker exec -it task-management-app php artisan migrate:fresh --seed
+```
+
+
 ### (optional): Use Tinker
 
 ```powershell
@@ -250,7 +275,7 @@ docker compose down
 ```
 
 👉 After step 1–4, your API will be running at:
-**[http://localhost:8000/api](http://localhost:8000/api)**---
+**[http://localhost:8000/api](http://localhost:8000/api)**
 
 ---
 

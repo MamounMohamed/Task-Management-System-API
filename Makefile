@@ -26,3 +26,9 @@ tinker:
 
 test:
 	docker exec -it task-management-app php artisan test
+
+seed:
+	docker exec -it task-management-app php artisan db:seed 
+
+fresh-seed:
+	docker exec -it task-management-app php artisan migrate:fresh --seed
