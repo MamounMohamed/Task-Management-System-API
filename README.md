@@ -375,7 +375,7 @@ docker compose down
 
 ```json
 {
-  "status": "in_progress",
+  "status": "pending",
   "dependencies": [2, 4]
 }
 ```
@@ -390,8 +390,8 @@ The Postman collection is included as `TaskManagementAPI.postman_collection.json
 
 * Organized by `Auth` and `Tasks` folders.
 * Automatically sets bearer token after login.
-* Includes test scripts to capture IDs for dynamic requests.
 * Supports filtering tasks and managing dependencies.
+*Allowed roles are manager and user while allowed statuses are pending, cancelled ,and completed 
 
 **How to Use:**
 
