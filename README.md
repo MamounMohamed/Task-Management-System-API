@@ -89,7 +89,13 @@ DB_PASSWORD=
 
 # or use sqlite
 # DB_CONNECTION=sqlite
+``` 
+Generate the application key:
+
+```bash
+php artisan key:generate
 ```
+
 
 ### Docker Environment
 
@@ -120,7 +126,6 @@ REDIS_PORT=6379
 REDIS_DB=0
 REDIS_CACHE_DB=1
 ```
-
 Generate the application key:
 
 ```bash
@@ -132,10 +137,23 @@ php artisan key:generate
 
 ### Option 1: Laravel Artisan (Local)
 
+Migrate and seed the database:
+
+```bash
+php artisan migrate --seed
+```
+
+Add storage symlink:
+
+```bash
+php artisan storage:link
+```
+
+Start the development server:
+
 ```bash
 php artisan serve
 ```
-
 
 ---
 
